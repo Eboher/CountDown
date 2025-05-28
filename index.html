@@ -1,45 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CountDown Timer</title>
+    <title>Countdown Timer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Countdown Timer</h1>
-        
+        <div class="top-bar">
+            <div class="pin-btn" id="pin-btn" title="窗口置顶">📌</div>
+        </div>
         <div class="timer-display">
-            <div id="timer">00:00:00</div>
+            <span id="minutes" class="time-part">45</span>
+            <span class="colon">:</span>
+            <span id="seconds" class="time-part">00</span>
         </div>
-        
-        <div class="input-section">
-            <div class="time-inputs">
-                <div class="input-group">
-                    <label for="hours">Hours</label>
-                    <input type="number" id="hours" min="0" max="99" value="0">
-                </div>
-                
-                <div class="input-group">
-                    <label for="minutes">Minutes</label>
-                    <input type="number" id="minutes" min="0" max="59" value="0">
-                </div>
-                
-                <div class="input-group">
-                    <label for="seconds">Seconds</label>
-                    <input type="number" id="seconds" min="0" max="59" value="0">
-                </div>
-            </div>
-        </div>
-        
         <div class="controls">
-            <button id="start-btn" class="btn">Start</button>
-            <button id="stop-btn" class="btn" disabled>Stop</button>
-            <button id="reset-btn" class="btn">Reset</button>
+            <button id="start-reset-btn" class="btn">开始倒计时</button>
+            <button id="pause-resume-btn" class="btn">暂停</button>
+        </div>
+        <div id="rest-tip" class="rest-tip" style="display:none;">休息时间</div>
+        <div id="confirm-btn-wrapper" style="display:none;">
+            <button id="confirm-btn" class="btn confirm">确认</button>
         </div>
     </div>
-    
     <script src="renderer.js"></script>
 </body>
 </html>

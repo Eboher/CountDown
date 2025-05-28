@@ -1,162 +1,177 @@
-// DOM elements
-const timerDisplay = document.getElementById('timer');
-const hoursInput = document.getElementById('hours');
-const minutesInput = document.getElementById('minutes');
-const secondsInput = document.getElementById('seconds');
-const startBtn = document.getElementById('start-btn');
-const stopBtn = document.getElementById('stop-btn');
-const resetBtn = document.getElementById('reset-btn');
+// DOM元素
+const minutesDisplay = document.getElementById('minutes');
+const secondsDisplay = document.getElementById('seconds');
+const startResetBtn = document.getElementById('start-reset-btn');
+const pauseResumeBtn = document.getElementById('pause-resume-btn');
+const pinBtn = document.getElementById('pin-btn');
+const restTip = document.getElementById('rest-tip');
+const confirmBtnWrapper = document.getElementById('confirm-btn-wrapper');
+const confirmBtn = document.getElementById('confirm-btn');
 
-// Timer variables
-let countdown;
-let totalSeconds = 0;
+// 状态变量
+let timer = null;
 let isRunning = false;
+let isPaused = false;
+let isRest = false;
+let isPinned = false;
+let workDuration = 45 * 60; // 45分钟
+let restDuration = 10 * 60; // 10分钟
+let currentSeconds = workDuration;
+let flashInterval = null;
 
-// Format time as HH:MM:SS
-function formatTime(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    
-    return [
-        hours.toString().padStart(2, '0'),
-        minutes.toString().padStart(2, '0'),
-        seconds.toString().padStart(2, '0')
-    ].join(':');
-}
-
-// Update timer display
 function updateDisplay() {
-    timerDisplay.textContent = formatTime(totalSeconds);
+    const min = Math.floor(currentSeconds / 60).toString().padStart(2, '0');
+    const sec = (currentSeconds % 60).toString().padStart(2, '0');
+    minutesDisplay.textContent = min;
+    secondsDisplay.textContent = sec;
 }
 
-// Validate inputs to ensure they're within valid ranges
-function validateInputs() {
-    // Ensure hours is a non-negative number
-    let hours = parseInt(hoursInput.value) || 0;
-    if (hours < 0) hours = 0;
-    if (hours > 99) hours = 99;
-    hoursInput.value = hours;
-    
-    // Ensure minutes is between 0-59
-    let minutes = parseInt(minutesInput.value) || 0;
-    if (minutes < 0) minutes = 0;
-    if (minutes > 59) minutes = 59;
-    minutesInput.value = minutes;
-    
-    // Ensure seconds is between 0-59
-    let seconds = parseInt(secondsInput.value) || 0;
-    if (seconds < 0) seconds = 0;
-    if (seconds > 59) seconds = 59;
-    secondsInput.value = seconds;
-    
-    // Calculate total seconds
-    return (hours * 3600) + (minutes * 60) + seconds;
+function setFlashing(enable) {
+    if (enable) {
+        let flag = false;
+        flashInterval = setInterval(() => {
+            document.body.style.background = flag ? 'linear-gradient(135deg, #fff 0%, #e74c3c 100%)' : 'linear-gradient(135deg, #e74c3c 0%, #fff 100%)';
+            flag = !flag;
+        }, 400);
+    } else {
+        clearInterval(flashInterval);
+        document.body.style.background = '';
+    }
 }
 
-// Start the countdown
 function startTimer() {
     if (isRunning) return;
-    
-    // Get and validate time from inputs
-    totalSeconds = validateInputs();
-    
-    // Check if time is set
-    if (totalSeconds <= 0) {
-        alert('Please set a time greater than zero.');
-        return;
-    }
-    
-    // Update UI state
     isRunning = true;
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
-    
-    // Disable inputs while timer is running
-    hoursInput.disabled = true;
-    minutesInput.disabled = true;
-    secondsInput.disabled = true;
-    
-    // Start countdown
-    updateDisplay();
-    countdown = setInterval(() => {
-        if (totalSeconds <= 0) {
-            clearInterval(countdown);
-            isRunning = false;
-            startBtn.disabled = false;
-            stopBtn.disabled = true;
-            hoursInput.disabled = false;
-            minutesInput.disabled = false;
-            secondsInput.disabled = false;
-            alert('Countdown complete!');
-            return;
+    isPaused = false;
+    pauseResumeBtn.textContent = '暂停';
+    startResetBtn.textContent = '重置倒计时';
+    pauseResumeBtn.disabled = false;
+    timer = setInterval(() => {
+        if (!isPaused) {
+            if (currentSeconds > 0) {
+                currentSeconds--;
+                updateDisplay();
+            } else {
+                clearInterval(timer);
+                isRunning = false;
+                pauseResumeBtn.disabled = true;
+                setFlashing(true);
+                confirmBtnWrapper.style.display = '';
+                if (!isRest) {
+                    startResetBtn.disabled = true;
+                }
+            }
         }
-        
-        totalSeconds--;
-        updateDisplay();
     }, 1000);
 }
 
-// Stop the countdown
-function stopTimer() {
-    if (!isRunning) return;
-    
-    clearInterval(countdown);
-    isRunning = false;
-    
-    // Update UI state
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    
-    // Re-enable inputs
-    hoursInput.disabled = false;
-    minutesInput.disabled = false;
-    secondsInput.disabled = false;
-}
-
-// Reset the countdown
 function resetTimer() {
-    // Stop the timer if it's running
-    if (isRunning) {
-        clearInterval(countdown);
-        isRunning = false;
-    }
-    
-    // Reset inputs to zero
-    hoursInput.value = 0;
-    minutesInput.value = 0;
-    secondsInput.value = 0;
-    totalSeconds = 0;
-    
-    // Update UI state
+    clearInterval(timer);
+    setFlashing(false);
+    isRunning = false;
+    isPaused = false;
+    pauseResumeBtn.textContent = '暂停';
+    pauseResumeBtn.disabled = false;
+    startResetBtn.textContent = '开始倒计时';
+    startResetBtn.disabled = false;
+    confirmBtnWrapper.style.display = 'none';
+    restTip.style.display = 'none';
+    isRest = false;
+    currentSeconds = workDuration;
     updateDisplay();
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    
-    // Enable inputs
-    hoursInput.disabled = false;
-    minutesInput.disabled = false;
-    secondsInput.disabled = false;
 }
 
-// Add event listeners
-startBtn.addEventListener('click', startTimer);
-stopBtn.addEventListener('click', stopTimer);
-resetBtn.addEventListener('click', resetTimer);
+function pauseOrResume() {
+    if (!isRunning) return;
+    isPaused = !isPaused;
+    pauseResumeBtn.textContent = isPaused ? '继续倒计时' : '暂停';
+}
 
-// Input validation on change
-hoursInput.addEventListener('change', () => {
-    hoursInput.value = Math.max(0, Math.min(99, parseInt(hoursInput.value) || 0));
+function enterRest() {
+    setFlashing(false);
+    confirmBtnWrapper.style.display = 'none';
+    restTip.style.display = '';
+    isRest = true;
+    currentSeconds = restDuration;
+    updateDisplay();
+    startResetBtn.textContent = '重置倒计时';
+    startResetBtn.disabled = true;
+    pauseResumeBtn.disabled = false;
+    isRunning = false;
+    isPaused = false;
+    setTimeout(() => {
+        startTimer();
+    }, 500);
+}
+
+function finishRest() {
+    setFlashing(false);
+    restTip.style.display = 'none';
+    confirmBtnWrapper.style.display = 'none';
+    isRest = false;
+    currentSeconds = 0;
+    updateDisplay();
+    startResetBtn.textContent = '开始倒计时';
+    startResetBtn.disabled = false;
+    pauseResumeBtn.disabled = true;
+}
+
+startResetBtn.addEventListener('click', () => {
+    if (!isRunning && !isRest) {
+        // 开始工作倒计时
+        currentSeconds = workDuration;
+        updateDisplay();
+        startTimer();
+    } else {
+        // 重置
+        resetTimer();
+    }
 });
 
-minutesInput.addEventListener('change', () => {
-    minutesInput.value = Math.max(0, Math.min(59, parseInt(minutesInput.value) || 0));
+pauseResumeBtn.addEventListener('click', pauseOrResume);
+
+confirmBtn.addEventListener('click', () => {
+    if (!isRest) {
+        // 进入休息
+        enterRest();
+    } else {
+        // 休息结束
+        finishRest();
+    }
 });
 
-secondsInput.addEventListener('change', () => {
-    secondsInput.value = Math.max(0, Math.min(59, parseInt(secondsInput.value) || 0));
+// 休息倒计时结束自动弹确认
+function checkRestEnd() {
+    if (isRest && currentSeconds === 0) {
+        clearInterval(timer);
+        isRunning = false;
+        pauseResumeBtn.disabled = true;
+        setFlashing(true);
+        confirmBtnWrapper.style.display = '';
+        confirmBtn.textContent = '确认';
+    }
+}
+setInterval(checkRestEnd, 500);
+
+// 置顶按钮交互
+function setPinBtnState(pinned) {
+    isPinned = pinned;
+    pinBtn.classList.toggle('pinned', isPinned);
+}
+
+// 支持主进程返回置顶状态
+if (window.electronAPI && window.electronAPI.getAlwaysOnTop) {
+    window.electronAPI.getAlwaysOnTop().then(setPinBtnState);
+}
+
+pinBtn.addEventListener('click', () => {
+    isPinned = !isPinned;
+    setPinBtnState(isPinned);
+    if (window.electronAPI && window.electronAPI.setAlwaysOnTop) {
+        window.electronAPI.setAlwaysOnTop(isPinned);
+    }
 });
 
-// Initialize display
-updateDisplay();
+// 初始化
+resetTimer();
 

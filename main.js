@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Keep a global reference of the window object to avoid garbage collection
@@ -7,11 +7,16 @@ let mainWindow;
 function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 370,
+    height: 340,
+    minWidth: 320,
+    minHeight: 300,
+    maxWidth: 420,
+    maxHeight: 400,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
   });
@@ -28,6 +33,20 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+// 监听置顶请求
+ipcMain.on('set-always-on-top', (event, flag) => {
+  if (mainWindow) {
+    mainWindow.setAlwaysOnTop(!!flag);
+  }
+});
+
+ipcMain.handle('get-always-on-top', () => {
+  if (mainWindow) {
+    return mainWindow.isAlwaysOnTop();
+  }
+  return false;
+});
 
 // Create the window when Electron has finished initializing
 app.whenReady().then(createWindow);
@@ -46,4 +65,10 @@ app.on('activate', function () {
 process.on('uncaughtException', (error) => {
   console.error('An uncaught error occurred:', error);
 });
+
+function setPinBtnState(pinned) {
+    isPinned = pinned;
+    pinBtn.classList.toggle('pinned', isPinned);
+    pinBtn.textContent = isPinned ? '📌' : '🔗'; // 置顶/未置顶不同图标
+}
 
