@@ -30,7 +30,7 @@ function setFlashing(enable) {
     if (enable) {
         let flag = false;
         flashInterval = setInterval(() => {
-            document.body.style.background = flag ? 'linear-gradient(135deg, #fff 0%, #e74c3c 100%)' : 'linear-gradient(135deg, #e74c3c 0%, #fff 100%)';
+            document.body.style.background = flag ? '#ffffff' : '#ffebee';
             flag = !flag;
         }, 400);
     } else {
@@ -157,6 +157,8 @@ setInterval(checkRestEnd, 500);
 function setPinBtnState(pinned) {
     isPinned = pinned;
     pinBtn.classList.toggle('pinned', isPinned);
+    pinBtn.textContent = isPinned ? '📌' : '🔗'; // 置顶/未置顶不同图标
+    pinBtn.title = isPinned ? '取消置顶' : '窗口置顶';
 }
 
 // 支持主进程返回置顶状态

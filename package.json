@@ -4,12 +4,18 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "electron-builder"
   },
-  "keywords": ["countdown", "timer", "electron", "desktop"],
+  "keywords": ["countdown", "timer", "electron", "desktop", "pomodoro", "focus"],
   "author": "Eboher",
   "license": "ISC",
-  "description": "A simple desktop countdown timer application built with Electron",
+  "description": "一个简洁、轻量级的桌面倒计时工具，基于Electron开发，适用于工作/学习的专注时间管理",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eboher/CountDown.git"
+  },
+  "homepage": "https://github.com/eboher/CountDown",
   "devDependencies": {
     "electron": "^36.3.1"
   }

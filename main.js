@@ -7,12 +7,12 @@ let mainWindow;
 function createWindow() {
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 370,
-    height: 340,
-    minWidth: 320,
-    minHeight: 300,
-    maxWidth: 420,
-    maxHeight: 400,
+    width: 240,
+    height: 240,
+    minWidth: 220,
+    minHeight: 220,
+    maxWidth: 280,
+    maxHeight: 280,
     resizable: false,
     webPreferences: {
       nodeIntegration: true,
@@ -65,10 +65,4 @@ app.on('activate', function () {
 process.on('uncaughtException', (error) => {
   console.error('An uncaught error occurred:', error);
 });
-
-function setPinBtnState(pinned) {
-    isPinned = pinned;
-    pinBtn.classList.toggle('pinned', isPinned);
-    pinBtn.textContent = isPinned ? '📌' : '🔗'; // 置顶/未置顶不同图标
-}
 
