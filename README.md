@@ -12,7 +12,7 @@
 
 ## 界面预览
 
-![应用界面](docs/preview.png)
+![应用界面](docs/preview.jpg)
 
 ## 安装方法
 
@@ -45,7 +45,6 @@ npm start
 ## 技术栈
 
 - Electron: v36.3.1
-- HTML/CSS/JavaScript
 
 ## 开发者
 
@@ -53,4 +52,4 @@ npm start
 
 ## 许可证
 
-ISC 许可证 
+MIT License
