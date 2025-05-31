@@ -5,9 +5,20 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-builder"
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "predist": "npm run generate-icons",
+    "generate-icons": "node scripts/generate-icons.js",
+    "release": "electron-builder --mac --publish always"
   },
-  "keywords": ["countdown", "timer", "electron", "desktop", "pomodoro", "focus"],
+  "keywords": [
+    "countdown",
+    "timer",
+    "electron",
+    "desktop",
+    "pomodoro",
+    "focus"
+  ],
   "author": "Eboher",
   "license": "ISC",
   "description": "一个简洁、轻量级的桌面倒计时工具，基于Electron开发，适用于工作/学习的专注时间管理",
@@ -16,7 +27,41 @@
     "url": "https://github.com/eboher/CountDown.git"
   },
   "homepage": "https://github.com/eboher/CountDown",
+  "build": {
+    "appId": "com.eboher.countdown",
+    "productName": "CountDown",
+    "copyright": "Copyright © 2023 Eboher",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": ["dmg", "zip"],
+      "darkModeSupport": true
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    }
+  },
   "devDependencies": {
-    "electron": "^36.3.1"
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12"
   }
 }
